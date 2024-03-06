@@ -1,6 +1,5 @@
 <div align="center">
     <h1>Auto Load Extension</h1>
-    <h3>I'm glad to finish the task for you</h3>
 </div>
 
 
@@ -37,6 +36,6 @@ I look forward to continuing our cooperation in the future. I can start working 
 
 > Contact
 
-phone number: +381611114128
+phone number: 
 
-email: truebluedragon93@gmail.com
+email: 
