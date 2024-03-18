@@ -15,7 +15,7 @@
 - **Done!**
 
 ## About the project
-this is a slightly difficult project in extension development.
+In fact, this is a slightly difficult project in extension development.
 Generally, chrome extensions cannot call or access other extensions.
 Only self-developed extensions can communicate in the form of sending and receiving notifications.
 To solve this problem, we used an auxiliary program that supports extension.
