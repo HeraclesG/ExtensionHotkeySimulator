@@ -7,7 +7,7 @@
 
 ## Installation
 > Install Host App
-- Go into the folder **host_app**, and run **install_host**
+- Go into the folder **Host_app**, and run **install_host**
 - **Open [the extensions page](chrome://extensions)** in your browser: `chrome://extensions`. 
 - If you did not do it already, **toggle the "developer mode"**. This is usually a toggle button at the top right of the extensions page.
 - Click the button **_load unpacked extension_**.
