@@ -11,27 +11,21 @@ chrome.runtime.onInstalled.addListener(async () => {
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status === 'complete') {
-       
-        var hostName = "com.blue.chrome.load.host";
-        
-        port = chrome.runtime.connectNative(hostName);
-        port.onMessage.addListener((message) => {
-            console.log(message);
-        });
-      
-        chrome.storage.sync.get(["key"]).then((result) => {
-            var msg = {
-                'SCTRL': result.key.kctrl,
-                'SSHIFT': result.key.kshift,
-                'SALT': result.key.kalt,
-                'SCODE': result.key.ktext.charCodeAt(0)
-            }
-            console.log(msg);
-            console.log(JSON.stringify(msg));
-            port.postMessage(msg);
-       
-        });
-        
     }
   });
   
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    console.log("mative msg", request.message)
+    if (request.action === 'sendToNative') {
+        console.log("sdfsdf")
+        var hostName = "com.blue.chrome.load.host";
+        var port = chrome.runtime.connectNative(hostName);
+        port.onMessage.addListener((message) => {
+            console.log(message);
+        });
+        port.onDisconnect.addListener(() => {
+            console.log('Disconnected from native app');
+        });
+        port.postMessage(request.message);
+    }
+});

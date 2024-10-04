@@ -9,6 +9,9 @@
 #include <io.h>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QFile>
+#include <QTextStream>
+#include <QString>
 // #define TESTMODE
 int SetBinaryMode(FILE* file)
 {
@@ -30,7 +33,16 @@ int SetBinaryMode(FILE* file)
 
     return 0;
 }
+void SendGlobalMouseWheel(int delta) {
+    // Prepare the INPUT structure
+    INPUT input = {0};
+    input.type = INPUT_MOUSE; // Set the type to mouse input
+    input.mi.dwFlags = MOUSEEVENTF_WHEEL; // Specify that this is a wheel event
+    input.mi.mouseData = delta; // Set the delta value (positive for up, negative for down)
 
+    // Send the input event
+    SendInput(1, &input, sizeof(INPUT));
+}
 void SendKeyPress(WORD keyCode)
 {
     INPUT input = { 0 };
@@ -57,12 +69,27 @@ void SendKeyRelease(WORD keyCode)
     // Send the key release event
     SendInput(1, &input, sizeof(INPUT));
 }
+void saveStringToFile(const QString &text, const QString &filePath) {
+    QFile file(filePath);
 
+    // Open the file in WriteOnly mode
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qDebug() << "Could not open file for writing:" << file.errorString();
+        return;
+    }
+
+    // Create a QTextStream to write to the file
+    QTextStream out(&file);
+    out << text; // Write the string to the file
+
+    // Close the file
+    file.close();
+    qDebug() << "File saved successfully.";
+}
 int main(int argc, char *argv[])
 {
 
     QApplication a(argc, argv);
-
     size_t iSize = 0;
     char* jsonMsg = NULL;
     unsigned char len_bytes[4];
@@ -75,52 +102,58 @@ int main(int argc, char *argv[])
         {
             jsonMsg = (char*)malloc(8 * iLen);
             iSize = fread(jsonMsg, 1, iLen, stdin);
-
             QByteArray ba = QByteArray::fromRawData(jsonMsg, iLen);
             QString s = QString::fromStdString(ba.toStdString());
             s.remove('\n');
             s.remove('\r');
-            QJsonDocument jsonDoc = QJsonDocument::fromJson(s.toUtf8());
-            QJsonObject jsonObj = jsonDoc.object();
+            printf("sdfsdf");
+            SendGlobalMouseWheel(s.toInt() * -1);
+            QString textToSave = "Hello, this is a sample text!";
+            QString filePath = "output.txt"; // Specify your file path
+
+            // saveStringToFile(s, filePath);
+            // QJsonDocument jsonDoc = QJsonDocument::fromJson(s.toUtf8());
+            // QJsonObject jsonObj = jsonDoc.object();
 
 
-            bool bctrl = jsonObj["SCTRL"].toBool();
-            bool bshift = jsonObj["SSHIFT"].toBool();
-            bool balt = jsonObj["SALT"].toBool();
-            int bcode = jsonObj["SCODE"].toInt(66);
+            // bool bctrl = jsonObj["SCTRL"].toBool();
+            // bool bshift = jsonObj["SSHIFT"].toBool();
+            // bool balt = jsonObj["SALT"].toBool();
+            // int bcode = jsonObj["SCODE"].toInt(66);
 
-            SendKeyRelease(VK_CONTROL);
-            SendKeyRelease(VK_SHIFT);
-            SendKeyRelease(VK_MENU);
-            SendKeyRelease(bcode);
-            if(bctrl) {
+            // SendKeyRelease(VK_CONTROL);
+            // SendKeyRelease(VK_SHIFT);
+            // SendKeyRelease(VK_MENU);
+            // SendKeyRelease(bcode);
+            // if(bctrl) {
 
-                SendKeyPress(VK_CONTROL);
-            }
-            if(bshift) {
-                SendKeyPress(VK_SHIFT);
-            }
-            if(balt) {
-                SendKeyPress(VK_MENU);
-            }
-            SendKeyPress(bcode);
-            if(bctrl) {
-                SendKeyRelease(VK_CONTROL);
-            }
-            if(bshift) {
-                SendKeyRelease(VK_SHIFT);
-            }
-            if(balt) {
-                SendKeyRelease(VK_MENU);
-            }
-            SendKeyRelease(VK_CONTROL);
-            SendKeyRelease(VK_SHIFT);
-            SendKeyRelease(VK_MENU);
-            SendKeyRelease(bcode);
+            //     SendKeyPress(VK_CONTROL);
+            // }
+            // if(bshift) {
+            //     SendKeyPress(VK_SHIFT);
+            // }
+            // if(balt) {
+            //     SendKeyPress(VK_MENU);
+            // }
+            // SendKeyPress(bcode);
+            // if(bctrl) {
+            //     SendKeyRelease(VK_CONTROL);
+            // }
+            // if(bshift) {
+            //     SendKeyRelease(VK_SHIFT);
+            // }
+            // if(balt) {
+            //     SendKeyRelease(VK_MENU);
+            // }
+            // SendKeyRelease(VK_CONTROL);
+            // SendKeyRelease(VK_SHIFT);
+            // SendKeyRelease(VK_MENU);
+            // SendKeyRelease(bcode);
 
 
         }
         if (jsonMsg != NULL)
             free(jsonMsg);
+        a.exit(0);
     }
 }
